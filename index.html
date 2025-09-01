@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>أنس محمد | مطور مواقع وتطبيقات</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #7E33CA;
+            --secondary: #5D21BC;
+            --accent: #9D4DE0;
+            --light: #F8F5FF;
+            --dark: #1A0933;
+            --text: #333;
+            --gradient: linear-gradient(135deg, var(--primary), var(--secondary));
+            --glass: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: var(--gradient);
+            color: var(--light);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+            transition: all 0.3s ease;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(157, 77, 224, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(93, 33, 188, 0.3) 0%, transparent 50%);
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 100px 20px 20px;
+            transition: all 0.3s ease;
+        }
+
+        /* زر القائمة */
+        .menu-toggle {
+            position: fixed;
+            top: 25px;
+            right: 25px;
+            width: 50px;
+            height: 50px;
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1001;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .menu-toggle:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: rotate(90deg);
+        }
+
+        .menu-toggle i {
+            font-size: 1.5rem;
+        }
+
+        /* القائمة الجانبية */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 300px;
+            height: 100vh;
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            border-left: 1px solid var(--glass-border);
+            z-index: 1000;
+            padding: 80px 20px 20px;
+            transition: all 0.3s ease;
+            box-shadow: -5px 0 25px rgba(0, 0, 0, 0.2);
+            overflow-y: auto;
+        }
+
+        .sidebar.open {
+            right: 0;
+        }
+
+        .sidebar-logo {
+            text-align: center;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .sidebar-logo-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--accent);
+        }
+
+        .sidebar-nav {
+            list-style: none;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 10px;
+        }
+
+        .sidebar-nav a {
+            display: block;
+            padding: 15px;
+            color: var(--light);
+            text-decoration: none;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .sidebar-nav a:hover,
+        .sidebar-nav a.active {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateX(-5px);
+        }
+
+        .sidebar-nav i {
+            margin-left: 10px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .sidebar-lang {
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .lang-btn {
+            padding: 8px 15px;
+            border-radius: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            color: var(--light);
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: 1px solid var(--glass-border);
+        }
+
+        .lang-btn.active {
+            background: var(--accent);
+        }
+
+        /* الأقسام */
+        section {
+            min-height: 100vh;
+            display: none;
+            padding: 40px 0;
+            animation: fadeIn 0.5s ease;
+        }
+
+        section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-content {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            padding: 40px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+        }
+
+        /* الصفحة الرئيسية */
+        #home .section-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .profile-info h1 {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            background: linear-gradient(to right, #fff, #e0d1ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .profile-info h2 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #d4c4ff;
+        }
+
+        .profile-info p {
+            margin-bottom: 30px;
+            line-height: 1.6;
+            font-size: 1.1rem;
+        }
+
+        .profile-img {
+            display: flex;
+            justify-content: center;
+            position: relative;
+        }
+
+        .profile-img img {
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        }
+
+        .img-border {
+            position: absolute;
+            width: 320px;
+            height: 320px;
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+            box-shadow: 0 5px 15px rgba(157, 77, 224, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(157, 77, 224, 0.4);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 15px;
+        }
+
+        .social-link {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .social-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
+        }
+
+        /* صفحة المشاريع */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .project-card {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 20px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .project-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .project-card h3 {
+            margin-bottom: 15px;
+            color: #e0d1ff;
+        }
+
+        .project-card p {
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .project-links {
+            display: flex;
+            gap: 10px;
+        }
+
+        .project-link {
+            padding: 8px 15px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .project-link:hover {
+            background: var(--accent);
+        }
+
+        /* صفحة الشات بوت */
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 500px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .chat-header {
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 15px;
+            border-radius: 20px;
+        }
+
+        .bot-message {
+            background: rgba(255, 255, 255, 0.1);
+            align-self: flex-start;
+            border-bottom-left-radius: 5px;
+        }
+
+        .user-message {
+            background: var(--accent);
+            align-self: flex-end;
+            border-bottom-right-radius: 5px;
+        }
+
+        .chat-input {
+            display: flex;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            gap: 10px;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 15px;
+            border-radius: 50px;
+            border: none;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            outline: none;
+        }
+
+        .chat-input button {
+            padding: 15px 25px;
+            border-radius: 50px;
+            border: none;
+            background: var(--accent);
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .chat-input button:hover {
+            background: var(--primary);
+        }
+
+        /* زر واتساب في نهاية المحادثة */
+        .whatsapp-btn {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 12px 20px;
+            background: #25D366;
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(37, 211, 102, 0.3);
+        }
+
+        .whatsapp-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(37, 211, 102, 0.4);
+        }
+
+        /* صفحة الاتصال */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .contact-card {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .contact-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .contact-card i {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: #e0d1ff;
+        }
+
+        .contact-card h3 {
+            margin-bottom: 15px;
+        }
+
+        .contact-card a {
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: block;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .contact-card a:hover {
+            color: #e0d1ff;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* تصميم متجاوب */
+        @media (max-width: 900px) {
+            #home .section-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+            
+            .profile-info h1 {
+                font-size: 2.5rem;
+            }
+            
+            .cta-buttons {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .profile-img img {
+                width: 250px;
+                height: 250px;
+            }
+            
+            .img-border {
+                width: 270px;
+                height: 270px;
+            }
+            
+            .cta-buttons {
+                flex-direction: column;
+            }
+            
+            .project-links {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 250px;
+                right: -250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- زر القائمة -->
+    <div class="menu-toggle">
+        <i class="fas fa-bars"></i>
+    </div>
+
+    <!-- القائمة الجانبية -->
+    <div class="sidebar">
+        <div class="sidebar-logo">
+            <span class="sidebar-logo-dot"></span>
+            <span>أنس محمد</span>
+        </div>
+        
+        <ul class="sidebar-nav">
+            <li><a href="#home" class="sidebar-link active" data-section="home">
+                <i class="fas fa-home"></i>
+                الرئيسية
+            </a></li>
+            <li><a href="#projects" class="sidebar-link" data-section="projects">
+                <i class="fas fa-project-diagram"></i>
+                المشاريع
+            </a></li>
+            <li><a href="#chatbot" class="sidebar-link" data-section="chatbot">
+                <i class="fas fa-robot"></i>
+                الشات بوت
+            </a></li>
+            <li><a href="#contact" class="sidebar-link" data-section="contact">
+                <i class="fas fa-phone"></i>
+                اتصل بي
+            </a></li>
+        </ul>
+        
+        <div class="sidebar-lang">
+            <span class="lang-btn active" data-lang="ar">AR</span>
+            <span class="lang-btn" data-lang="en">EN</span>
+        </div>
+    </div>
+
+    <!-- الأقسام -->
+    <div class="container">
+        <!-- الصفحة الرئيسية -->
+        <section id="home" class="active">
+            <div class="section-content">
+                <div class="profile-info">
+                    <h1>أنس محمد</h1>
+                    <h2>مطور مواقع وتطبيقات</h2>
+                    <p>أنا مطور ومصمم مواقع من الصفر، أبلغ من العمر 17 عامًا. أتخصص في تطوير الويب باستخدام HTML، CSS، JavaScript، Python ولغات أخرى. أحول الأفكار إلى واقع من خلال البرمجة، وأهتم بتحويل المواقع إلى تطبيقات أندرويد.</p>
+                    <div class="cta-buttons">
+                        <a href="https://wa.me/201558364953" class="btn btn-primary" target="_blank">تواصل معي على واتساب</a>
+                    </div>
+                    <div class="social-links">
+                        <a href="https://www.facebook.com/anas.mohamed.682346" class="social-link" target="_blank">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="https://www.instagram.com/anasmo011" class="social-link" target="_blank">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="https://wa.me/201558364953" class="social-link" target="_blank">
+                            <i class="fab fa-whatsapp"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="profile-img">
+                    <div class="img-border"></div>
+                    <img src="https://i.postimg.cc/V6Df3F0L/IMG.jpg" alt="أنس محمد">
+                </div>
+            </div>
+        </section>
+
+        <!-- صفحة المشاريع -->
+        <section id="projects">
+            <div class="section-content">
+                <h2>مشاريعي</h2>
+                <p>هذه بعض المشاريع التي عملت عليها. يمثل كل مشروع مهاراتي في تطوير وتصميم المواقع.</p>
+                
+                <div class="projects-grid">
+                    <div class="project-card">
+                        <h3>Web Studio SMSM</h3>
+                        <p>موقع ستوديو ويب كامل بتصميم عصري وتخطيط متجاوب.</p>
+                        <div class="project-links">
+                            <a href="https://web-studiosmsm-anas.netlify.app/" class="project-link" target="_blank">عرض الموقع</a>
+                            <a href="https://www.mediafire.com/file/mbo0k9xjndr4dnt/studiosmsm-anas.apk" class="project-link" target="_blank">تحميل التطبيق</a>
+                        </div>
+                    </div>
+                    
+                    <div class="project-card">
+                        <h3>AMA - تحت التطوير</h3>
+                        <p>منصة تجارة إلكترونية قيد التطوير حاليًا بميزات متقدمة.</p>
+                        <div class="project-links">
+                            <a href="https://ama309825.github.io/-999/" class="project-link" target="_blank">معاينة الموقع</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- صفحة الشات بوت -->
+        <section id="chatbot">
+            <div class="section-content">
+                <h2>شات بوت الحجز</h2>
+                <p>استخدم هذا الشات بوت لحجز خدماتي. فقط قدم تفاصيلك وسأعود إليك في أقرب وقت ممكن.</p>
+                
+                <div class="chat-container">
+                    <div class="chat-header">
+                        <h3>مساعد الحجز</h3>
+                    </div>
+                    <div class="chat-messages" id="chat-messages">
+                        <div class="message bot-message">
+                            مرحبًا! أنا هنا لمساعدتك في حجز خدمات أنس. ما هو اسمك؟
+                        </div>
+                    </div>
+                    <div class="chat-input">
+                        <input type="text" id="chat-input" placeholder="اكتب رسالتك هنا...">
+                        <button id="send-message">إرسال</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- صفحة الاتصال -->
+        <section id="contact">
+            <div class="section-content">
+                <h2>اتصل بي</h2>
+                <p>لا تتردد في التواصل معي عبر أي من هذه القنوات. أنا دائمًا منفتح لمناقشة المشاريع والفرص الجديدة.</p>
+                
+                <div class="contact-grid">
+                    <div class="contact-card">
+                        <i class="fas fa-phone"></i>
+                        <h3>الهاتف</h3>
+                        <a href="tel:+201558364953">+20 155 836 4953</a>
+                    </div>
+                    
+                    <div class="contact-card">
+                        <i class="fab fa-facebook"></i>
+                        <h3>فيسبوك</h3>
+                        <a href="https://www.facebook.com/anas.mohamed.682346" target="_blank">أنس محمد</a>
+                    </div>
+                    
+                    <div class="contact-card">
+                        <i class="fab fa-instagram"></i>
+                        <h3>إنستغرام</h3>
+                        <a href="https://www.instagram.com/anasmo011" target="_blank">@anasmo011</a>
+                    </div>
+                    
+                    <div class="contact-card">
+                        <i class="fab fa-whatsapp"></i>
+                        <h3>واتساب</h3>
+                        <a href="https://wa.me/201558364953" target="_blank">+20 155 836 4953</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // فتح وإغلاق القائمة الجانبية
+        const menuToggle = document.querySelector('.menu-toggle');
+        const sidebar = document.querySelector('.sidebar');
+        
+        menuToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+            menuToggle.querySelector('i').classList.toggle('fa-bars');
+            menuToggle.querySelector('i').classList.toggle('fa-times');
+        });
+
+        // التنقل بين الأقسام
+        document.querySelectorAll('.sidebar-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // إخفاء جميع الأقسام
+                document.querySelectorAll('section').forEach(section => {
+                    section.classList.remove('active');
+                });
+                
+                // إزالة النشط من جميع الروابط
+                document.querySelectorAll('.sidebar-link').forEach(link => {
+                    link.classList.remove('active');
+                });
+                
+                // إظهار القسم المطلوب
+                const targetId = this.getAttribute('data-section');
+                document.getElementById(targetId).classList.add('active');
+                
+                // إضافة النشط للرابط
+                this.classList.add('active');
+                
+                // إغلاق القائمة الجانبية على الأجهزة المحمولة
+                if (window.innerWidth <= 600) {
+                    sidebar.classList.remove('open');
+                    menuToggle.querySelector('i').classList.add('fa-bars');
+                    menuToggle.querySelector('i').classList.remove('fa-times');
+                }
+                
+                // التمرير إلى الأعلى
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        });
+
+        // تبديل اللغة
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.lang-btn').forEach(b => {
+                    b.classList.remove('active');
+                });
+                this.classList.add('active');
+                
+                // هنا سيتم إضافة وظيفة الترجمة الفعلية
+                alert('سيتم تنفيذ وظيفة الترجمة هنا');
+            });
+        });
+
+        // الشات بوت
+        const chatMessages = document.getElementById('chat-messages');
+        const chatInput = document.getElementById('chat-input');
+        const sendMessageBtn = document.getElementById('send-message');
+        
+        let userName = '';
+        let userPhone = '';
+        let serviceRequest = '';
+        let chatStep = 0;
+        
+        function addMessage(message, isUser = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message');
+            messageDiv.classList.add(isUser ? 'user-message' : 'bot-message');
+            
+            // التحقق من وجود روابط في الرسالة
+            if (typeof message === 'string' && message.includes('href=')) {
+                messageDiv.innerHTML = message;
+            } else {
+                messageDiv.textContent = message;
+            }
+            
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        function handleChat() {
+            const message = chatInput.value.trim();
+            if (!message) return;
+            
+            addMessage(message, true);
+            chatInput.value = '';
+            
+            switch(chatStep) {
+                case 0:
+                    userName = message;
+                    setTimeout(() => {
+                        addMessage(`سعيد بلقائك، ${userName}! ما هو رقم هاتفك؟`);
+                    }, 1000);
+                    chatStep = 1;
+                    break;
+                case 1:
+                    userPhone = message;
+                    setTimeout(() => {
+                        addMessage("ممتاز! ما هي الخدمة التي ترغب في حجزها؟");
+                    }, 1000);
+                    chatStep = 2;
+                    break;
+                case 2:
+                    serviceRequest = message;
+                    setTimeout(() => {
+                        addMessage("شكرًا لك! لقد استلمت معلومات حجزك.");
+                        setTimeout(() => {
+                            const whatsappMessage = `مرحبًا، أنا ${userName}. أرغب في حجز: ${serviceRequest}. رقم هاتفي هو ${userPhone}.`;
+                            const encodedMessage = encodeURIComponent(whatsappMessage);
+                            
+                            // إضافة زر واتساب بدلاً من الرابط العادي
+                            const whatsappBtn = document.createElement('a');
+                            whatsappBtn.href = `https://wa.me/201558364953?text=${encodedMessage}`;
+                            whatsappBtn.target = "_blank";
+                            whatsappBtn.className = "whatsapp-btn";
+                            whatsappBtn.innerHTML = '<i class="fab fa-whatsapp"></i> افتح واتساب لإرسال الحجز';
+                            
+                            const messageDiv = document.createElement('div');
+                            messageDiv.classList.add('message', 'bot-message');
+                            messageDiv.innerHTML = "اضغط على الزر أدناه لفتح واتساب وإرسال طلب الحجز مباشرة:";
+                            messageDiv.appendChild(document.createElement('br'));
+                            messageDiv.appendChild(whatsappBtn);
+                            
+                            chatMessages.appendChild(messageDiv);
+                            chatMessages.scrollTop = chatMessages.scrollHeight;
+                        }, 1500);
+                    }, 1000);
+                    chatStep = 3;
+                    break;
+                default:
+                    setTimeout(() => {
+                        addMessage("يرجى الانتظار حتى أعود إليك بشأن حجزك.");
+                    }, 1000);
+            }
+        }
+        
+        sendMessageBtn.addEventListener('click', handleChat);
+        chatInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                handleChat();
+            }
+        });
+
+        // التأكد من أن جميع الروابط الخارجية تفتح في نافذة جديدة
+        document.querySelectorAll('a').forEach(link => {
+            if (link.hostname !== window.location.hostname) {
+                link.setAttribute('target', '_blank');
+                link.setAttribute('rel', 'noopener noreferrer');
+            }
+        });
+    </script>
+</body>
+</html>
